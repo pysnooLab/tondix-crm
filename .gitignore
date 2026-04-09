@@ -42,6 +42,12 @@ public/r/
 !supabase/functions/.env
 .claude/settings.local.json
 
+# Git worktrees
+worktrees/
+
+# Superpowers brainstorm sessions
+.superpowers/
+
 # Playwright
 node_modules/
 /test-results/
