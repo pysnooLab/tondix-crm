@@ -1,29 +1,36 @@
-import { CRM } from "@/components/atomic-crm/root/CRM";
+import { CRM } from '@/components/atomic-crm/root/CRM';
 
-/**
- * Application entry point
- *
- * Customize Atomic CRM by passing props to the CRM component:
- *  - companySectors
- *  - darkTheme
- *  - dealCategories
- *  - dealPipelineStatuses
- *  - dealStages
- *  - lightTheme
- *  - logo
- *  - noteStatuses
- *  - taskTypes
- *  - title
- * ... as well as all the props accepted by shadcn-admin-kit's <Admin> component.
- *
- * @example
- * const App = () => (
- *    <CRM
- *       logo="./img/logo.png"
- *       title="Acme CRM"
- *    />
- * );
- */
-const App = () => <CRM />;
+const tondixDealStages = [
+  { value: 'opportunity', label: 'Opportunité' },
+  { value: 'proposal-sent', label: 'Devis envoyé' },
+  { value: 'in-negociation', label: 'En négociation' },
+  { value: 'won', label: 'Gagné' },
+  { value: 'lost', label: 'Perdu' },
+  { value: 'delayed', label: 'Différé' },
+];
+
+const tondixDealCategories = [
+  { value: 'tondeuse', label: 'Vente tondeuse' },
+  { value: 'entretien', label: 'Contrat entretien' },
+  { value: 'mixte', label: 'Tondeuse + Entretien' },
+];
+
+const tondixCompanySectors = [
+  { value: 'paysagiste', label: 'Paysagiste' },
+  { value: 'golf', label: 'Golf / Terrain de sport' },
+  { value: 'collectivite', label: 'Collectivité' },
+  { value: 'agriculture', label: 'Agriculture' },
+  { value: 'autre', label: 'Autre' },
+];
+
+const App = () => (
+  <CRM
+    title="Tondix CRM"
+    dealStages={tondixDealStages}
+    dealCategories={tondixDealCategories}
+    companySectors={tondixCompanySectors}
+    disableTelemetry
+  />
+);
 
 export default App;
