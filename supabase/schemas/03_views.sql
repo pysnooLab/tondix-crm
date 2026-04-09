@@ -93,7 +93,16 @@ select
     c.tax_identifier,
     c.logo,
     count(distinct d.id) as nb_deals,
-    count(distinct co.id) as nb_contacts
+    count(distinct co.id) as nb_contacts,
+    exists(
+        select 1 from public.deal_products dp
+        join public.deals d2 on d2.id = dp.deal_id
+        where d2.company_id = c.id
+    ) as has_equipment,
+    exists(
+        select 1 from public.maintenance_contracts mc
+        where mc.company_id = c.id and mc.end_date > now()
+    ) as has_maintenance
 from public.companies c
     left join public.deals d on c.id = d.company_id
     left join public.contacts co on c.id = co.company_id

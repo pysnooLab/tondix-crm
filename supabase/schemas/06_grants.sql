@@ -65,6 +65,10 @@ grant all on function public.set_sales_id_default() to anon;
 grant all on function public.set_sales_id_default() to authenticated;
 grant all on function public.set_sales_id_default() to service_role;
 
+grant all on function public.create_maintenance_contracts_on_win() to anon;
+grant all on function public.create_maintenance_contracts_on_win() to authenticated;
+grant all on function public.create_maintenance_contracts_on_win() to service_role;
+
 -- Table grants
 grant all on table public.companies to anon;
 grant all on table public.companies to authenticated;
@@ -105,6 +109,26 @@ grant all on table public.configuration to service_role;
 grant all on table public.favicons_excluded_domains to anon;
 grant all on table public.favicons_excluded_domains to authenticated;
 grant all on table public.favicons_excluded_domains to service_role;
+
+grant all on table public.products to anon;
+grant all on table public.products to authenticated;
+grant all on table public.products to service_role;
+
+grant all on table public.services to anon;
+grant all on table public.services to authenticated;
+grant all on table public.services to service_role;
+
+grant all on table public.deal_products to anon;
+grant all on table public.deal_products to authenticated;
+grant all on table public.deal_products to service_role;
+
+grant all on table public.deal_services to anon;
+grant all on table public.deal_services to authenticated;
+grant all on table public.deal_services to service_role;
+
+grant all on table public.maintenance_contracts to anon;
+grant all on table public.maintenance_contracts to authenticated;
+grant all on table public.maintenance_contracts to service_role;
 
 -- View grants
 grant all on table public.activity_log to anon;
@@ -159,6 +183,26 @@ grant all on sequence public.tags_id_seq to service_role;
 grant all on sequence public.tasks_id_seq to anon;
 grant all on sequence public.tasks_id_seq to authenticated;
 grant all on sequence public.tasks_id_seq to service_role;
+
+grant all on sequence public.products_id_seq to anon;
+grant all on sequence public.products_id_seq to authenticated;
+grant all on sequence public.products_id_seq to service_role;
+
+grant all on sequence public.services_id_seq to anon;
+grant all on sequence public.services_id_seq to authenticated;
+grant all on sequence public.services_id_seq to service_role;
+
+grant all on sequence public.deal_products_id_seq to anon;
+grant all on sequence public.deal_products_id_seq to authenticated;
+grant all on sequence public.deal_products_id_seq to service_role;
+
+grant all on sequence public.deal_services_id_seq to anon;
+grant all on sequence public.deal_services_id_seq to authenticated;
+grant all on sequence public.deal_services_id_seq to service_role;
+
+grant all on sequence public.maintenance_contracts_id_seq to anon;
+grant all on sequence public.maintenance_contracts_id_seq to authenticated;
+grant all on sequence public.maintenance_contracts_id_seq to service_role;
 
 -- Default privileges
 alter default privileges for role postgres in schema public grant all on sequences to postgres;

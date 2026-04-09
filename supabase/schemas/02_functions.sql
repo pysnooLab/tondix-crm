@@ -453,3 +453,27 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+-- Create maintenance contracts when a deal is won
+create or replace function public.create_maintenance_contracts_on_win()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+    -- Only trigger when stage changes to 'won'
+    if (old.stage is distinct from new.stage and new.stage = 'won') then
+        insert into public.maintenance_contracts (company_id, service_id, deal_id, start_date, end_date)
+        select
+            new.company_id,
+            ds.service_id,
+            new.id,
+            current_date,
+            current_date + (s.periodicity_months || ' months')::interval
+        from public.deal_services ds
+        join public.services s on s.id = ds.service_id
+        where ds.deal_id = new.id;
+    end if;
+    return new;
+end;
+$$;
