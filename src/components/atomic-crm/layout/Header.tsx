@@ -1,10 +1,15 @@
-import { Import, Settings, User, Users } from "lucide-react";
+import { ChevronDown, Import, Settings, User, Users } from "lucide-react";
 import { CanAccess, useTranslate, useUserMenu } from "ra-core";
 import { Link, matchPath, useLocation } from "react-router";
 import { RefreshButton } from "@/components/admin/refresh-button";
 import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import { ImportPage } from "../misc/ImportPage";
@@ -23,6 +28,11 @@ const Header = () => {
     currentPath = "/companies";
   } else if (matchPath("/deals/*", location.pathname)) {
     currentPath = "/deals";
+  } else if (
+    matchPath("/products/*", location.pathname) ||
+    matchPath("/services/*", location.pathname)
+  ) {
+    currentPath = "/catalogue";
   } else {
     currentPath = false;
   }
@@ -77,6 +87,7 @@ const Header = () => {
                     to="/deals"
                     isActive={currentPath === "/deals"}
                   />
+                  <CatalogueDropdown isActive={currentPath === "/catalogue"} />
                 </nav>
               </div>
               <div className="flex items-center">
@@ -120,6 +131,35 @@ const NavigationTab = ({
   >
     {label}
   </Link>
+);
+
+const CatalogueDropdown = ({ isActive }: { isActive: boolean }) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 flex items-center gap-1 outline-none ${
+        isActive
+          ? "text-secondary-foreground border-secondary-foreground"
+          : "text-secondary-foreground/70 border-transparent hover:text-secondary-foreground/80"
+      }`}
+    >
+      Catalogue
+      <ChevronDown className="size-4" />
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="start">
+      <DropdownMenuItem asChild>
+        <Link to="/products" className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-green-500" />
+          Tondeuses
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <Link to="/services" className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-yellow-500" />
+          Entretiens
+        </Link>
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
 );
 
 const UsersMenu = () => {
