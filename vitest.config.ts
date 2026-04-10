@@ -13,9 +13,10 @@ export default defineConfig({
       instances: [
         {
           browser: "chromium",
-          ...(process.env.CI && {
-            launch: { channel: "chromium-headless-shell" },
-          }),
+          launch: {
+            headless: true,
+            ...(process.env.CI && { channel: "chromium-headless-shell" }),
+          },
         },
       ],
       commands: {
