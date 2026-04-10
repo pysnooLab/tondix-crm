@@ -159,12 +159,13 @@ spin: ## create worktree + branch + node_modules symlink (TASK=XXX NAME=branch-n
 	ln -s $(PWD)/node_modules worktrees/TASK-$(TASK)/node_modules
 	@echo "✓ Worktree TASK-$(TASK) prêt. Dispatch JEROME."
 
-merge: ## rebase on master, push branch, open PR (TASK=XXX) — requires gh CLI
-	@test -n "$(TASK)" || (echo "❌ Usage: make merge TASK=XXX" && false)
+merge: ## rebase on master, push branch, open PR (TASK=XXX TITLE="feat: description") — requires gh CLI
+	@test -n "$(TASK)" || (echo "❌ Usage: make merge TASK=XXX TITLE=\"feat: description\"" && false)
+	@test -n "$(TITLE)" || (echo "❌ TITLE manquant — usage: make merge TASK=XXX TITLE=\"feat: description\"" && false)
 	cd worktrees/TASK-$(TASK) && git fetch origin && git rebase origin/master
 	cd worktrees/TASK-$(TASK) && git push -u origin HEAD
 	cd worktrees/TASK-$(TASK) && gh pr create \
-		--title "[TASK-$(TASK)] $$(git log --oneline -1 | sed 's/^[a-f0-9]* //')" \
+		--title "[TASK-$(TASK)] $(TITLE)" \
 		--body "Closes TASK-$(TASK)" \
 		--base master
 

@@ -215,8 +215,12 @@ make spin TASK=XXX NAME=yyy
       ↓
   Tous verts ? ✗ conflit → BENOIT [Sonnet] arbitre
   → JEROME [Opus]  — écrit docs/reflections/TASK-XXX-reflection.md
-  → JULIEN [Haiku] — confirme merge
-make merge TASK=XXX
+  → JULIEN [Haiku] — make merge TASK=XXX TITLE="feat: <description de la tâche>"
+  → JULIEN [Haiku] — gh pr merge --squash --auto <N>  (filet de sécurité)
+  → JULIEN [Haiku] — gh pr checks <N> --watch         (attend et lit le résultat)
+      ✓ exit 0 → tout est vert, auto-merge se déclenchera, envoie résumé au team-lead
+      ✗ exit 1 → envoie rapport détaillé au team-lead (quels checks ont échoué + logs)
+                  JEROME corrige + push → JULIEN relance gh pr checks --watch
 make clean TASK=XXX NAME=yyy
 ```
 
@@ -231,13 +235,40 @@ make clean TASK=XXX NAME=yyy
 | GUILLAUME| claude-haiku-4-5-20251001  | Validation tests                               |
 | ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX                               |
 | BENOIT   | claude-sonnet-4-6          | Arbitrage PM (uniquement si conflit)           |
-| JULIEN   | claude-haiku-4-5-20251001  | Merge (si toutes reviews vertes)               |
+| JULIEN   | claude-haiku-4-5-20251001  | make merge + gh pr merge --auto (GitHub attend la CI) |
 
 ### REFLECTION.md — Boucle d'apprentissage
 
 Après avoir reçu toutes les reviews, JEROME écrit `docs/reflections/TASK-XXX-reflection.md` (voir `docs/reflections/TEMPLATE.md`).
 
 **Règle de relecture :** le prompt de dispatch JEROME inclut la liste des fichiers `docs/reflections/` du même domaine (frontend, backend, DB...) à relire avant d'implémenter.
+
+### Spawn d'agents dans des fenêtres séparées
+
+Pour avoir chaque agent visible dans sa propre fenêtre tmux, utiliser **TeamCreate + Agent avec `team_name`** — ne pas utiliser le tool `Agent` seul (qui tourne en arrière-plan sans fenêtre visible).
+
+```
+# 1. Créer l'équipe (une par session de travail)
+TeamCreate({ team_name: "tondix-phase2", description: "..." })
+
+# 2. Créer les tâches
+TaskCreate({ subject: "...", description: "..." })
+TaskUpdate({ taskId: "1", owner: "JEROME-009", status: "in_progress" })
+
+# 3. Spawner les agents en parallèle (chacun dans sa fenêtre)
+Agent({ name: "JEROME-009", team_name: "tondix-phase2", model: "opus", prompt: "..." })
+Agent({ name: "JEROME-005", team_name: "tondix-phase2", model: "opus", prompt: "..." })
+```
+
+Les agents envoient leurs résultats via `SendMessage` au team-lead (toi). Tu es notifié automatiquement quand ils terminent.
+
+**Shutdown semi-automatique via hooks** (configuré dans `.claude/settings.json`) :
+
+- **`TeammateIdle` hook** (`.claude/hooks/teammate-idle.sh`) — actuellement désactivé (exit 0) car l'injection de feedback (exit 2) interrompt les agents en cours de travail multi-étapes. Le shutdown reste manuel : envoyer `shutdown_request` après réception du message de fin de l'agent.
+
+- **`TaskCompleted` hook** (`.claude/hooks/task-completed.sh`) — avant de marquer une tâche completed, vérifie que `npm run typecheck` passe dans le worktree associé (détecté via `TASK-XXX` dans le subject/owner). Bloque avec exit 2 si typecheck échoue.
+
+**Convention dans les prompts agents :** chaque prompt doit terminer par "Après avoir envoyé ton résumé au team-lead, n'effectue plus aucune action — le team-lead enverra un shutdown_request."
 
 ### Règles transverses
 
@@ -246,3 +277,5 @@ Après avoir reçu toutes les reviews, JEROME écrit `docs/reflections/TASK-XXX-
 - **Reviews parallèles :** JIBE, FRANCIS, GUILLAUME, ALEXANDRA travaillent simultanément
 - **BENOIT :** intervient uniquement sur conflit entre reviewers ou décision PM, pas sur chaque ticket
 - **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
+- **CI obligatoire :** JULIEN active `--auto` comme filet, puis surveille activement avec `gh pr checks <N> --watch`. Si exit 1 : rapport détaillé au team-lead immédiatement, JEROME corrige, JULIEN re-surveille. La branch protection bloque côté serveur (double verrou). Haiku suffit ici — l'exit code est binaire, pas d'interprétation complexe.
+- **Titre de PR :** JULIEN passe toujours `TITLE="feat/fix: <description de la tâche>"` à `make merge` — jamais le message du dernier commit. La description vient du sujet de la tâche (TaskGet si besoin).
