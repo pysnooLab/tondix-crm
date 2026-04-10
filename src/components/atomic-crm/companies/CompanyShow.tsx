@@ -19,7 +19,7 @@ import {
   useLocation,
   useMatch,
   useNavigate,
-} from "react-router-dom";
+} from "react-router";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ActivityLog } from "../activity/ActivityLog";
@@ -33,6 +33,8 @@ import { formatRelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import type { Company, Contact, Deal } from "../types";
+import { CompanyEquipmentSection } from "./CompanyEquipmentSection";
+import { CompanyMaintenanceSection } from "./CompanyMaintenanceSection";
 import {
   AdditionalInfo,
   AddressInfo,
@@ -181,6 +183,8 @@ const CompanyShowContent = () => {
             </Tabs>
           </CardContent>
         </Card>
+        <CompanyEquipmentSection />
+        <CompanyMaintenanceSection />
       </div>
       <CompanyAside />
     </div>
