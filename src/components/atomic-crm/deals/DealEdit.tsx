@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import {
   EditBase,
   Form,
+  useDataProvider,
   useEditContext,
   useNotify,
   useRecordContext,
@@ -15,17 +17,33 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { FormToolbar } from "../layout/FormToolbar";
 import { CompanyAvatar } from "../companies/CompanyAvatar";
-import type { Deal } from "../types";
+import type { Deal, DealProductLine, DealServiceLine } from "../types";
 import { DealInputs } from "./DealInputs";
+import { syncDealProducts, syncDealServices } from "./syncDealLines";
 
 export const DealEdit = ({ open, id }: { open: boolean; id?: string }) => {
   const redirect = useRedirect();
   const notify = useNotify();
+  const dataProvider = useDataProvider();
+  const productLinesRef = useRef<DealProductLine[]>([]);
+  const serviceLinesRef = useRef<DealServiceLine[]>([]);
 
   const handleClose = () => {
     redirect("/deals", undefined, undefined, undefined, {
       _scrollToTop: false,
     });
+  };
+
+  const transform = (
+    data: Partial<Deal> & {
+      product_lines?: DealProductLine[];
+      service_lines?: DealServiceLine[];
+    },
+  ) => {
+    productLinesRef.current = data.product_lines ?? [];
+    serviceLinesRef.current = data.service_lines ?? [];
+    const { product_lines, service_lines, ...rest } = data;
+    return rest;
   };
 
   return (
@@ -35,12 +53,29 @@ export const DealEdit = ({ open, id }: { open: boolean; id?: string }) => {
           <EditBase
             id={id}
             mutationMode="pessimistic"
+            transform={transform}
             mutationOptions={{
-              onSuccess: () => {
+              onSuccess: async (deal: Deal) => {
+                await Promise.all([
+                  syncDealProducts(
+                    dataProvider,
+                    deal.id,
+                    productLinesRef.current,
+                  ),
+                  syncDealServices(
+                    dataProvider,
+                    deal.id,
+                    serviceLinesRef.current,
+                  ),
+                ]);
                 notify("resources.deals.updated", {});
-                redirect(`/deals/${id}/show`, undefined, undefined, undefined, {
-                  _scrollToTop: false,
-                });
+                redirect(
+                  `/deals/${deal.id}/show`,
+                  undefined,
+                  undefined,
+                  undefined,
+                  { _scrollToTop: false },
+                );
               },
             }}
           >
