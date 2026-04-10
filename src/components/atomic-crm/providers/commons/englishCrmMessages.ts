@@ -429,7 +429,7 @@ export const englishCrmMessages = {
       latest_notes: "My Latest Notes",
       latest_notes_added_ago: "added %{timeAgo}",
       stepper: {
-        install: "Install Atomic CRM",
+        install: "Install Tondix CRM",
         progress: "%{step}/3 done",
         whats_next: "What's next?",
       },
@@ -526,7 +526,7 @@ export const englishCrmMessages = {
     profile: {
       inbound: {
         description:
-          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. Atomic CRM will process the emails and add notes to the corresponding contacts.",
+          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. Tondix CRM will process the emails and add notes to the corresponding contacts.",
         title: "Inbound email",
       },
       mcp: {
