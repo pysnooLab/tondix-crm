@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Form,
@@ -12,13 +13,16 @@ import { SaveButton } from "@/components/admin/form";
 import { FormToolbar } from "@/components/admin/simple-form";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import type { Deal } from "../types";
+import type { Deal, DealProductLine, DealServiceLine } from "../types";
 import { DealInputs } from "./DealInputs";
+import { syncDealProducts, syncDealServices } from "./syncDealLines";
 
 export const DealCreate = ({ open }: { open: boolean }) => {
   const redirect = useRedirect();
   const dataProvider = useDataProvider();
   const { data: allDeals } = useListContext<Deal>();
+  const productLinesRef = useRef<DealProductLine[]>([]);
+  const serviceLinesRef = useRef<DealServiceLine[]>([]);
 
   const handleClose = () => {
     redirect("/deals");
@@ -26,7 +30,23 @@ export const DealCreate = ({ open }: { open: boolean }) => {
 
   const queryClient = useQueryClient();
 
+  const transform = (
+    data: Partial<Deal> & {
+      product_lines?: DealProductLine[];
+      service_lines?: DealServiceLine[];
+    },
+  ) => {
+    productLinesRef.current = data.product_lines ?? [];
+    serviceLinesRef.current = data.service_lines ?? [];
+    const { product_lines, service_lines, ...rest } = data;
+    return rest;
+  };
+
   const onSuccess = async (deal: Deal) => {
+    await Promise.all([
+      syncDealProducts(dataProvider, deal.id, productLinesRef.current),
+      syncDealServices(dataProvider, deal.id, serviceLinesRef.current),
+    ]);
     if (!allDeals) {
       redirect("/deals");
       return;
@@ -75,7 +95,11 @@ export const DealCreate = ({ open }: { open: boolean }) => {
   return (
     <Dialog open={open} onOpenChange={() => handleClose()}>
       <DialogContent className="lg:max-w-4xl overflow-y-auto max-h-9/10 top-1/20 translate-y-0">
-        <Create resource="deals" mutationOptions={{ onSuccess }}>
+        <Create
+          resource="deals"
+          transform={transform}
+          mutationOptions={{ onSuccess }}
+        >
           <Form
             defaultValues={{
               sales_id: identity?.id,
