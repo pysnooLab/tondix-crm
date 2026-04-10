@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { memoryStore, type AuthProvider } from "ra-core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useMemo, type ReactNode } from "react";
 import { MemoryRouter } from "react-router";
 import cloneDeep from "lodash/cloneDeep";
@@ -93,6 +94,10 @@ export const StoryWrapper = ({
   initialEntries?: string[];
   silent?: boolean;
 }) => {
+  const queryClient = useMemo(
+    () => new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    [],
+  );
   const authProvider = useMemo(() => createTestAuthProvider(), []);
   const dataProvider = useMemo(
     () => ({
@@ -110,21 +115,23 @@ export const StoryWrapper = ({
   }, []);
 
   return (
-    <MemoryRouter initialEntries={initialEntries}>
-      <CRM
-        authProvider={authProvider}
-        dataProvider={dataProvider}
-        i18nProvider={testI18nProvider}
-        dashboard={() => <>{children}</>}
-        store={store}
-        disableTelemetry
-        layout={({ children }) => (
-          <>
-            {children}
-            <Notification />
-          </>
-        )}
-      />
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <CRM
+          authProvider={authProvider}
+          dataProvider={dataProvider}
+          i18nProvider={testI18nProvider}
+          dashboard={() => <>{children}</>}
+          store={store}
+          disableTelemetry
+          layout={({ children }) => (
+            <>
+              {children}
+              <Notification />
+            </>
+          )}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };

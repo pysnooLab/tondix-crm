@@ -10,12 +10,16 @@ export default defineConfig({
     browser: {
       provider: playwright(),
       enabled: true,
+      headless: true,
+      ui: false,
+      api: { port: 0, strictPort: false },
       instances: [
         {
           browser: "chromium",
-          ...(process.env.CI && {
-            launch: { channel: "chromium-headless-shell" },
-          }),
+          launch: {
+            headless: true,
+            ...(process.env.CI && { channel: "chromium-headless-shell" }),
+          },
         },
       ],
       commands: {
@@ -34,6 +38,7 @@ export default defineConfig({
       "supabase/**",
       ".supabase-e2e/**",
       "e2e/**/*.spec.{ts,tsx}",
+      "worktrees/**",
     ],
     server: {
       deps: {

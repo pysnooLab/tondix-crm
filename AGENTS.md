@@ -215,8 +215,10 @@ make spin TASK=XXX NAME=yyy
       ↓
   Tous verts ? ✗ conflit → BENOIT [Sonnet] arbitre
   → JEROME [Opus]  — écrit docs/reflections/TASK-XXX-reflection.md
-  → JULIEN [Haiku] — confirme merge
-make merge TASK=XXX
+  → JULIEN [Haiku] — make merge TASK=XXX (rebase + push + ouverture PR)
+  → JULIEN [Haiku] — vérifie CI (gh pr checks <N>)
+      ✗ CI rouge → JEROME corrige + push → JULIEN re-vérifie
+      ✓ CI verte → gh pr merge --squash <N>
 make clean TASK=XXX NAME=yyy
 ```
 
@@ -231,7 +233,7 @@ make clean TASK=XXX NAME=yyy
 | GUILLAUME| claude-haiku-4-5-20251001  | Validation tests                               |
 | ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX                               |
 | BENOIT   | claude-sonnet-4-6          | Arbitrage PM (uniquement si conflit)           |
-| JULIEN   | claude-haiku-4-5-20251001  | Merge (si toutes reviews vertes)               |
+| JULIEN   | claude-haiku-4-5-20251001  | make merge + vérif CI + gh pr merge (si CI verte) |
 
 ### REFLECTION.md — Boucle d'apprentissage
 
@@ -246,3 +248,4 @@ Après avoir reçu toutes les reviews, JEROME écrit `docs/reflections/TASK-XXX-
 - **Reviews parallèles :** JIBE, FRANCIS, GUILLAUME, ALEXANDRA travaillent simultanément
 - **BENOIT :** intervient uniquement sur conflit entre reviewers ou décision PM, pas sur chaque ticket
 - **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
+- **CI obligatoire :** JULIEN ne merge jamais une PR avec CI rouge — il rapporte les échecs à JEROME pour correction, puis re-vérifie avant merge
