@@ -51,7 +51,7 @@ export const ProductList = () => (
         </DataTable.Col>
         <DataTable.Col label={false}>
           <EditButton />
-          <DeleteButton mutationMode="pessimistic" />
+          <DeleteButton />
         </DataTable.Col>
       </DataTable>
     </div>
