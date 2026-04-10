@@ -216,10 +216,9 @@ make spin TASK=XXX NAME=yyy
   Tous verts ? ✗ conflit → BENOIT [Sonnet] arbitre
   → JEROME [Opus]  — écrit docs/reflections/TASK-XXX-reflection.md
   → JULIEN [Haiku] — make merge TASK=XXX TITLE="feat: <description de la tâche>"
-  → JULIEN [Haiku] — attend CI verte (gh pr checks <N> --watch)
-      ✗ CI rouge → JEROME corrige + push → JULIEN re-vérifie
-      ✓ CI verte → gh pr merge --squash <N>
-      (la branch protection bloque le merge côté serveur si CI rouge)
+  → JULIEN [Haiku] — gh pr merge --squash --auto <N>
+      (GitHub merge automatiquement quand CI est verte — branch protection bloque si rouge)
+      ✗ CI rouge → JEROME corrige + push → auto-merge se déclenche seul
 make clean TASK=XXX NAME=yyy
 ```
 
@@ -234,7 +233,7 @@ make clean TASK=XXX NAME=yyy
 | GUILLAUME| claude-haiku-4-5-20251001  | Validation tests                               |
 | ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX                               |
 | BENOIT   | claude-sonnet-4-6          | Arbitrage PM (uniquement si conflit)           |
-| JULIEN   | claude-haiku-4-5-20251001  | make merge + attente CI + gh pr merge (si CI verte) |
+| JULIEN   | claude-haiku-4-5-20251001  | make merge + gh pr merge --auto (GitHub attend la CI) |
 
 ### REFLECTION.md — Boucle d'apprentissage
 
@@ -276,5 +275,5 @@ Les agents envoient leurs résultats via `SendMessage` au team-lead (toi). Tu es
 - **Reviews parallèles :** JIBE, FRANCIS, GUILLAUME, ALEXANDRA travaillent simultanément
 - **BENOIT :** intervient uniquement sur conflit entre reviewers ou décision PM, pas sur chaque ticket
 - **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
-- **CI obligatoire :** JULIEN ne merge jamais une PR avec CI rouge — il attend avec `gh pr checks <N> --watch` et rapporte les échecs à JEROME. La branch protection bloque le merge côté serveur de toute façon.
+- **CI obligatoire :** JULIEN active `gh pr merge --squash --auto <N>` — GitHub merge automatiquement quand tous les checks requis sont verts, et refuse si CI rouge. JULIEN n'a pas à surveiller manuellement (source d'erreur). La branch protection bloque le merge côté serveur de toute façon (double verrou).
 - **Titre de PR :** JULIEN passe toujours `TITLE="feat/fix: <description de la tâche>"` à `make merge` — jamais le message du dernier commit. La description vient du sujet de la tâche (TaskGet si besoin).
