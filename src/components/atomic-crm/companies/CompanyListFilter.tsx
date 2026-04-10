@@ -1,4 +1,4 @@
-import { Building, Truck, Users } from "lucide-react";
+import { Building, Package, Truck, Users, Wrench } from "lucide-react";
 import { FilterLiveForm, useGetIdentity, useTranslate } from "ra-core";
 import { ToggleFilterButton } from "@/components/admin/toggle-filter-button";
 import { SearchInput } from "@/components/admin/search-input";
@@ -48,6 +48,28 @@ export const CompanyListFilter = () => {
             value={{ sector: sector.value }}
           />
         ))}
+      </FilterCategory>
+
+      <FilterCategory
+        icon={<Package className="h-4 w-4 text-green-600" />}
+        label="Équipements"
+      >
+        <ToggleFilterButton
+          className="w-full justify-between"
+          label="🌿 Avec équipement"
+          value={{ "has_equipment@eq": true }}
+        />
+      </FilterCategory>
+
+      <FilterCategory
+        icon={<Wrench className="h-4 w-4 text-yellow-600" />}
+        label="Entretiens"
+      >
+        <ToggleFilterButton
+          className="w-full justify-between"
+          label="🔧 Avec entretien actif"
+          value={{ "has_maintenance@eq": true }}
+        />
       </FilterCategory>
 
       <FilterCategory
