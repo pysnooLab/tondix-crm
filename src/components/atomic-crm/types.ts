@@ -69,8 +69,6 @@ export type Company = {
   context_links?: string[];
   nb_contacts?: number;
   nb_deals?: number;
-  has_equipment?: boolean;
-  has_maintenance?: boolean;
 } & Pick<RaRecord, "id">;
 
 export type EmailAndType = {
@@ -232,6 +230,7 @@ export interface ContactGender {
 // ─── Tondix CRM Types ────────────────────────────────────────────────────────
 
 export type Product = {
+  id: Identifier;
   name: string;
   description?: string;
   price: number;
@@ -240,6 +239,7 @@ export type Product = {
 } & Pick<RaRecord, "id">;
 
 export type Service = {
+  id: Identifier;
   name: string;
   type?: string;
   periodicity_months: number;
@@ -250,6 +250,7 @@ export type Service = {
 } & Pick<RaRecord, "id">;
 
 export type DealProduct = {
+  id: Identifier;
   deal_id: Identifier;
   product_id: Identifier;
   quantity: number;
@@ -257,6 +258,7 @@ export type DealProduct = {
 } & Pick<RaRecord, "id">;
 
 export type DealService = {
+  id: Identifier;
   deal_id: Identifier;
   service_id: Identifier;
   quantity: number;
@@ -264,6 +266,7 @@ export type DealService = {
 } & Pick<RaRecord, "id">;
 
 export type MaintenanceContract = {
+  id: Identifier;
   company_id: Identifier;
   service_id: Identifier;
   deal_id?: Identifier;
