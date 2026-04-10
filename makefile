@@ -1,4 +1,4 @@
-.PHONY: build help
+.PHONY: build help spin merge clean
 
 # Run silently, show output on failure
 run-silent = $1 >/tmp/atomic-crm-$2.log 2>&1 || (cat /tmp/atomic-crm-$2.log && false)
@@ -151,3 +151,26 @@ registry-gen: ## Generate the shadcn registry (ran automatically by a pre-commit
 
 storybook: ## start storybook
 	npm run storybook
+
+spin: ## create worktree + branch + node_modules symlink (TASK=XXX NAME=branch-name)
+	@test -n "$(TASK)" || (echo "❌ Usage: make spin TASK=XXX NAME=yyy" && false)
+	@test -n "$(NAME)" || (echo "❌ Usage: make spin TASK=XXX NAME=yyy" && false)
+	git worktree add worktrees/TASK-$(TASK) -b feat/TASK-$(TASK)-$(NAME)
+	ln -s $(PWD)/node_modules worktrees/TASK-$(TASK)/node_modules
+	@echo "✓ Worktree TASK-$(TASK) prêt. Dispatch JEROME."
+
+merge: ## rebase on master, push branch, open PR (TASK=XXX) — requires gh CLI
+	@test -n "$(TASK)" || (echo "❌ Usage: make merge TASK=XXX" && false)
+	cd worktrees/TASK-$(TASK) && git fetch origin && git rebase origin/master
+	cd worktrees/TASK-$(TASK) && git push -u origin HEAD
+	cd worktrees/TASK-$(TASK) && gh pr create \
+		--title "[TASK-$(TASK)] $$(git log --oneline -1 | sed 's/^[a-f0-9]* //')" \
+		--body "Closes TASK-$(TASK)" \
+		--base master
+
+clean: ## remove finished worktree after merge (TASK=XXX NAME=branch-name)
+	@test -n "$(TASK)" || (echo "❌ Usage: make clean TASK=XXX NAME=yyy" && false)
+	@test -n "$(NAME)" || (echo "❌ Usage: make clean TASK=XXX NAME=yyy" && false)
+	git worktree remove worktrees/TASK-$(TASK) --force
+	git branch -d feat/TASK-$(TASK)-$(NAME) 2>/dev/null || true
+	@echo "✓ Worktree TASK-$(TASK) supprimé."
