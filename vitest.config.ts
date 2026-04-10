@@ -10,6 +10,9 @@ export default defineConfig({
     browser: {
       provider: playwright(),
       enabled: true,
+      headless: true,
+      ui: false,
+      api: { port: 0, strictPort: false },
       instances: [
         {
           browser: "chromium",
@@ -35,6 +38,7 @@ export default defineConfig({
       "supabase/**",
       ".supabase-e2e/**",
       "e2e/**/*.spec.{ts,tsx}",
+      "worktrees/**",
     ],
     server: {
       deps: {

@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "vitest-browser-react";
 import { CoreAdminContext } from "ra-core";
 import fakeDataProvider from "ra-data-fakerest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { TaskListFilter } from "./TasksListFilter";
 
@@ -18,25 +19,31 @@ const createTask = (id: number, dueDate: Date, doneDate?: Date) => ({
   text: `Task ${id}`,
 });
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <CoreAdminContext
-    dataProvider={fakeDataProvider({ tasks: [], contacts: [], sales: [] })}
-    i18nProvider={{
-      translate: (key, options) => {
-        if (typeof options?._ === "string") {
-          return options._;
-        }
-        if (key === "crm.common.load_more") {
-          return "Load more";
-        }
-        return key;
-      },
-      changeLocale: () => Promise.resolve(),
-      getLocale: () => "en",
-    }}
-  >
-    {children}
-  </CoreAdminContext>
+  <QueryClientProvider client={queryClient}>
+    <CoreAdminContext
+      dataProvider={fakeDataProvider({ tasks: [], contacts: [], sales: [] })}
+      i18nProvider={{
+        translate: (key, options) => {
+          if (typeof options?._ === "string") {
+            return options._;
+          }
+          if (key === "crm.common.load_more") {
+            return "Load more";
+          }
+          return key;
+        },
+        changeLocale: () => Promise.resolve(),
+        getLocale: () => "en",
+      }}
+    >
+      {children}
+    </CoreAdminContext>
+  </QueryClientProvider>
 );
 
 describe("TaskListFilter", () => {
