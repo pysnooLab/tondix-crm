@@ -38,7 +38,11 @@ export const DealCreate = ({ open }: { open: boolean }) => {
   ) => {
     productLinesRef.current = data.product_lines ?? [];
     serviceLinesRef.current = data.service_lines ?? [];
-    const { product_lines, service_lines, ...rest } = data;
+    const {
+      product_lines: _product_lines,
+      service_lines: _service_lines,
+      ...rest
+    } = data;
     return rest;
   };
 
