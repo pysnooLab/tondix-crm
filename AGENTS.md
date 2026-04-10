@@ -216,9 +216,11 @@ make spin TASK=XXX NAME=yyy
   Tous verts ? ✗ conflit → BENOIT [Sonnet] arbitre
   → JEROME [Opus]  — écrit docs/reflections/TASK-XXX-reflection.md
   → JULIEN [Haiku] — make merge TASK=XXX TITLE="feat: <description de la tâche>"
-  → JULIEN [Haiku] — gh pr merge --squash --auto <N>
-      (GitHub merge automatiquement quand CI est verte — branch protection bloque si rouge)
-      ✗ CI rouge → JEROME corrige + push → auto-merge se déclenche seul
+  → JULIEN [Haiku] — gh pr merge --squash --auto <N>  (filet de sécurité)
+  → JULIEN [Haiku] — gh pr checks <N> --watch         (attend et lit le résultat)
+      ✓ exit 0 → tout est vert, auto-merge se déclenchera, envoie résumé au team-lead
+      ✗ exit 1 → envoie rapport détaillé au team-lead (quels checks ont échoué + logs)
+                  JEROME corrige + push → JULIEN relance gh pr checks --watch
 make clean TASK=XXX NAME=yyy
 ```
 
@@ -275,5 +277,5 @@ Les agents envoient leurs résultats via `SendMessage` au team-lead (toi). Tu es
 - **Reviews parallèles :** JIBE, FRANCIS, GUILLAUME, ALEXANDRA travaillent simultanément
 - **BENOIT :** intervient uniquement sur conflit entre reviewers ou décision PM, pas sur chaque ticket
 - **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
-- **CI obligatoire :** JULIEN active `gh pr merge --squash --auto <N>` — GitHub merge automatiquement quand tous les checks requis sont verts, et refuse si CI rouge. JULIEN n'a pas à surveiller manuellement (source d'erreur). La branch protection bloque le merge côté serveur de toute façon (double verrou).
+- **CI obligatoire :** JULIEN active `--auto` comme filet, puis surveille activement avec `gh pr checks <N> --watch`. Si exit 1 : rapport détaillé au team-lead immédiatement, JEROME corrige, JULIEN re-surveille. La branch protection bloque côté serveur (double verrou). Haiku suffit ici — l'exit code est binaire, pas d'interprétation complexe.
 - **Titre de PR :** JULIEN passe toujours `TITLE="feat/fix: <description de la tâche>"` à `make merge` — jamais le message du dernier commit. La description vient du sujet de la tâche (TaskGet si besoin).
