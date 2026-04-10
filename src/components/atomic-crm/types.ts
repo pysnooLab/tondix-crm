@@ -69,6 +69,8 @@ export type Company = {
   context_links?: string[];
   nb_contacts?: number;
   nb_deals?: number;
+  has_equipment?: boolean;
+  has_maintenance?: boolean;
 } & Pick<RaRecord, "id">;
 
 export type EmailAndType = {
