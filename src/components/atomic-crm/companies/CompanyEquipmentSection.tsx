@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { useGetList, useGetMany, useShowContext } from "ra-core";
 import { Link } from "react-router";
 import type { Company, Deal, DealProduct, Product } from "../types";
@@ -32,7 +33,19 @@ export const CompanyEquipmentSection = () => {
     { enabled: productIds.length > 0 },
   );
 
-  if (!record || !dealProducts?.length) return null;
+  if (!record) return null;
+
+  if (!dealProducts?.length) {
+    return (
+      <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-lg p-4 mt-4">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="font-semibold">🌿 Équipements achetés</span>
+          <Badge variant="secondary">0</Badge>
+        </div>
+        <p className="text-sm text-gray-500">Aucun équipement acheté</p>
+      </div>
+    );
+  }
 
   const productsById = new Map((products ?? []).map((p) => [p.id, p]));
 
@@ -64,9 +77,10 @@ export const CompanyEquipmentSection = () => {
 
   return (
     <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-lg p-4 mt-4">
-      <h3 className="text-sm font-semibold mb-3">
-        Equipements ({grouped.size})
-      </h3>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="font-semibold">🌿 Équipements achetés</span>
+        <Badge variant="secondary">{grouped.size}</Badge>
+      </div>
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-muted-foreground">
