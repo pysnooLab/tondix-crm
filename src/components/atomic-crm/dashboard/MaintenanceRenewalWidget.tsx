@@ -1,6 +1,7 @@
 import { useGetList, useGetMany } from "ra-core";
 import { Link } from "react-router";
 
+import { Badge } from "@/components/ui/badge";
 import type { Company, MaintenanceContract, Service } from "../types";
 
 export const MaintenanceRenewalWidget = () => {
@@ -83,23 +84,20 @@ export const MaintenanceRenewalWidget = () => {
 
   return (
     <div className="rounded-xl border overflow-hidden">
-      <div
-        className="flex items-center justify-between px-4 py-3"
-        style={{ background: "linear-gradient(to right, #16a34a, #ca8a04)" }}
-      >
+      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-green-600 to-yellow-600">
         <span className="text-white font-semibold">
           {"\uD83D\uDD27"} Entretiens \u00e0 relancer
         </span>
         <div className="flex gap-2">
           {soonContracts.length > 0 && (
-            <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">
+            <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
               {"\u26A0"} {soonContracts.length} bient\u00f4t
-            </span>
+            </Badge>
           )}
           {expiredContracts.length > 0 && (
-            <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
+            <Badge variant="destructive">
               {"\u2715"} {expiredContracts.length} expir\u00e9(s)
-            </span>
+            </Badge>
           )}
         </div>
       </div>
@@ -120,7 +118,13 @@ export const MaintenanceRenewalWidget = () => {
         </div>
       )}
       <div className="px-4 py-2 border-t text-sm">
-        <Link to="/companies" className="text-primary hover:underline">
+        <Link
+          to={{
+            pathname: "/companies",
+            search: `filter=${JSON.stringify({ "has_maintenance@eq": true })}`,
+          }}
+          className="text-primary hover:underline"
+        >
           Voir toutes les entreprises avec contrat d&apos;entretien &rarr;
         </Link>
       </div>

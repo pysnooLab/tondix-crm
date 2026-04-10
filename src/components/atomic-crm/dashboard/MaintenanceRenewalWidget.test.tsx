@@ -81,4 +81,48 @@ describe("MaintenanceRenewalWidget", () => {
     const screen = await render(<Default data={dynamicData} />);
     await expect.element(screen.getByText(/expiré/i)).toBeVisible();
   });
+
+  it("retourne null si aucun contrat dans les fenêtres 0-30j et 0-60j", async () => {
+    const emptyData = {
+      ...dynamicData,
+      maintenance_contracts: [
+        {
+          id: 1,
+          company_id: 1,
+          service_id: 1,
+          start_date: "2023-01-01",
+          end_date: "2023-06-01", // well outside both windows
+          status: "expired" as const,
+          created_at: "2023-01-01",
+        },
+      ],
+    };
+    const screen = await render(<Default data={emptyData} />);
+    // The widget should not render any content
+    await expect
+      .element(screen.getByText(/Entretiens/))
+      .not.toBeInTheDocument();
+  });
+
+  it("affiche 'Dans Xj' pour les contrats bientôt expirés et 'Expiré il y a Xj' pour les expirés", async () => {
+    const screen = await render(<Default data={dynamicData} />);
+
+    const soonDays = Math.round(
+      (soonDate.getTime() -
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime()) /
+        86_400_000,
+    );
+    const expiredDays = Math.round(
+      (new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+        expiredDate.getTime()) /
+        86_400_000,
+    );
+
+    await expect
+      .element(screen.getByText(`Dans ${soonDays}j`))
+      .toBeVisible();
+    await expect
+      .element(screen.getByText(`Expiré il y a ${expiredDays}j`))
+      .toBeVisible();
+  });
 });
