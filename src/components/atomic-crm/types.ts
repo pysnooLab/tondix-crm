@@ -226,3 +226,66 @@ export interface ContactGender {
   label: string;
   icon: ComponentType<{ className?: string }>;
 }
+
+// ─── Tondix CRM Types ────────────────────────────────────────────────────────
+
+export type Product = {
+  name: string;
+  description?: string;
+  price: number;
+  active: boolean;
+  created_at: string;
+} & Pick<RaRecord, "id">;
+
+export type Service = {
+  name: string;
+  type?: string;
+  periodicity_months: number;
+  price: number;
+  description?: string;
+  active: boolean;
+  created_at: string;
+} & Pick<RaRecord, "id">;
+
+export type DealProduct = {
+  deal_id: Identifier;
+  product_id: Identifier;
+  quantity: number;
+  unit_price: number;
+} & Pick<RaRecord, "id">;
+
+export type DealService = {
+  deal_id: Identifier;
+  service_id: Identifier;
+  quantity: number;
+  unit_price: number;
+} & Pick<RaRecord, "id">;
+
+export type MaintenanceContract = {
+  company_id: Identifier;
+  service_id: Identifier;
+  deal_id?: Identifier;
+  start_date: string;
+  end_date: string;
+  status: "active" | "expired";
+  created_at: string;
+} & Pick<RaRecord, "id">;
+
+// Types virtuels pour les formulaires react-hook-form (pas de correspondance DB directe)
+export type DealProductLine = {
+  product_id: Identifier;
+  quantity: number;
+  unit_price: number;
+};
+
+export type DealServiceLine = {
+  service_id: Identifier;
+  quantity: number;
+  unit_price: number;
+};
+
+// CompanySummary étend Company avec les champs calculés de la vue companies_summary
+export type CompanySummary = Company & {
+  has_equipment?: boolean;
+  has_maintenance?: boolean;
+};

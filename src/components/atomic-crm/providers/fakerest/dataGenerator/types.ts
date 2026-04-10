@@ -4,7 +4,12 @@ import type {
   ContactNote,
   Deal,
   DealNote,
+  DealProduct,
+  DealService,
+  MaintenanceContract,
+  Product,
   Sale,
+  Service,
   Tag,
   Task,
 } from "../../../types";
@@ -19,5 +24,10 @@ export interface Db {
   sales: Sale[];
   tags: Tag[];
   tasks: Task[];
+  products: Product[];
+  services: Service[];
+  deal_products: DealProduct[];
+  deal_services: DealService[];
+  maintenance_contracts: MaintenanceContract[];
   configuration: Array<{ id: number; config: ConfigurationContextValue }>;
 }

@@ -78,3 +78,8 @@ create or replace trigger on_auth_user_created
 create or replace trigger on_auth_user_updated
     after update on auth.users
     for each row execute function public.handle_update_user();
+
+-- Create maintenance contracts when a deal is marked as won
+create or replace trigger on_deal_won_create_maintenance_contracts
+    after update on public.deals
+    for each row execute function public.create_maintenance_contracts_on_win();

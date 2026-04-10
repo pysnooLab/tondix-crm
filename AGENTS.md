@@ -46,6 +46,14 @@ make registry-gen     # Generate registry.json (runs automatically on pre-commit
 make registry-build   # Build Shadcn registry
 ```
 
+### Worktree Management (Agent Workflow)
+
+```bash
+make spin TASK=XXX NAME=branch-name  # Créer worktree + branche + symlink node_modules
+make merge TASK=XXX                  # Rebase sur master + push + ouverture PR (nécessite gh CLI)
+make clean TASK=XXX NAME=branch-name # Supprimer le worktree après merge confirmé
+```
+
 ## Architecture
 
 ### Technology Stack
@@ -190,3 +198,51 @@ Import `test-data/contacts.csv` via the Contacts page → Import button.
 - Unit tests can be added in the `src/` directory (test files are named `*.test.ts` or `*.test.tsx`)
 - User deletion is not supported to avoid data loss; use account disabling instead
 - Filter operators must be supported by the `supabaseAdapter` when using FakeRest
+
+## Agent Team
+
+### Workflow par ticket
+
+```
+make spin TASK=XXX NAME=yyy
+  → ERWAN [Sonnet]  — validation spec
+  → JEROME [Opus]   — plan de code (fichiers, interfaces, découpage)
+  → ERWAN [Sonnet]  — plan approval (✗ refus → JEROME révise)
+  → JEROME [Opus]   — implémentation (commits atomiques par étape)
+      ↓ (en parallèle)
+  JIBE [Sonnet]        FRANCIS [Sonnet]     GUILLAUME [Haiku]    ALEXANDRA [Haiku]
+  code + spec          sécurité             tests verts           UI/UX
+      ↓
+  Tous verts ? ✗ conflit → BENOIT [Sonnet] arbitre
+  → JEROME [Opus]  — écrit docs/reflections/TASK-XXX-reflection.md
+  → JULIEN [Haiku] — confirme merge
+make merge TASK=XXX
+make clean TASK=XXX NAME=yyy
+```
+
+### Multi-model routing
+
+| Agent    | Modèle                     | Rôle                                           |
+|----------|----------------------------|-------------------------------------------------|
+| ERWAN    | claude-sonnet-4-6          | Validation spec + plan approval                |
+| JEROME   | claude-opus-4-6            | Implémentation code                            |
+| JIBE     | claude-sonnet-4-6          | Review code + conformité spec                  |
+| FRANCIS  | claude-sonnet-4-6          | Review sécurité                                |
+| GUILLAUME| claude-haiku-4-5-20251001  | Validation tests                               |
+| ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX                               |
+| BENOIT   | claude-sonnet-4-6          | Arbitrage PM (uniquement si conflit)           |
+| JULIEN   | claude-haiku-4-5-20251001  | Merge (si toutes reviews vertes)               |
+
+### REFLECTION.md — Boucle d'apprentissage
+
+Après avoir reçu toutes les reviews, JEROME écrit `docs/reflections/TASK-XXX-reflection.md` (voir `docs/reflections/TEMPLATE.md`).
+
+**Règle de relecture :** le prompt de dispatch JEROME inclut la liste des fichiers `docs/reflections/` du même domaine (frontend, backend, DB...) à relire avant d'implémenter.
+
+### Règles transverses
+
+- **Circuit-breaker :** agent bloqué après 3 itérations sur la même erreur → tuer et réassigner
+- **Plan approval :** ERWAN valide le plan JEROME avant tout code (évite l'accumulation de code mal orienté)
+- **Reviews parallèles :** JIBE, FRANCIS, GUILLAUME, ALEXANDRA travaillent simultanément
+- **BENOIT :** intervient uniquement sur conflit entre reviewers ou décision PM, pas sur chaque ticket
+- **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
