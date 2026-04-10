@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render } from "vitest-browser-react";
 
+import type { Db } from "../providers/fakerest/dataGenerator/types";
 import { Default } from "./MaintenanceRenewalWidget.stories";
 
 // Build test dates relative to "now" so we don't need fake timers.
@@ -14,7 +15,7 @@ const expiredDate = new Date(todayStr);
 expiredDate.setDate(expiredDate.getDate() - 30);
 const expiredDateStr = expiredDate.toISOString().split("T")[0];
 
-const dynamicData = {
+const dynamicData: Partial<Db> = {
   companies: [
     {
       id: 1,
@@ -39,7 +40,7 @@ const dynamicData = {
       id: 2,
       name: "Beta Ltd",
       sector: "farming",
-      size: 5 as const,
+      size: 10 as const,
       logo: { src: "", title: "" } as any,
       linkedin_url: "",
       website: "",
@@ -104,7 +105,7 @@ describe("MaintenanceRenewalWidget", () => {
   });
 
   it("retourne null si aucun contrat dans les fenêtres 0-30j et 0-60j", async () => {
-    const emptyData = {
+    const emptyData: Partial<Db> = {
       ...dynamicData,
       maintenance_contracts: [
         {
