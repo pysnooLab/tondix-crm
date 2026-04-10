@@ -14,30 +14,36 @@ export const MaintenanceRenewalWidget = () => {
   minus60.setDate(today.getDate() - 60);
   const minus60Str = minus60.toISOString().split("T")[0];
 
-  const { data: contracts = [], isPending } =
-    useGetList<MaintenanceContract>("maintenance_contracts", {
+  const { data: contracts = [], isPending } = useGetList<MaintenanceContract>(
+    "maintenance_contracts",
+    {
       filter: { "end_date@gte": minus60Str, "end_date@lte": plus30Str },
       pagination: { page: 1, perPage: 100 },
       sort: { field: "end_date", order: "ASC" },
-    });
+    },
+  );
 
   const companyIds = [...new Set(contracts.map((c) => c.company_id))];
   const serviceIds = [...new Set(contracts.map((c) => c.service_id))];
 
-  const { data: companies = [] } = useGetMany<Company>("companies", {
-    ids: companyIds,
-  }, { enabled: companyIds.length > 0 });
-
-  const { data: services = [] } = useGetMany<Service>("services", {
-    ids: serviceIds,
-  }, { enabled: serviceIds.length > 0 });
-
-  const companyById = Object.fromEntries(
-    companies.map((c) => [c.id, c]),
+  const { data: companies = [] } = useGetMany<Company>(
+    "companies",
+    {
+      ids: companyIds,
+    },
+    { enabled: companyIds.length > 0 },
   );
-  const serviceById = Object.fromEntries(
-    services.map((s) => [s.id, s]),
+
+  const { data: services = [] } = useGetMany<Service>(
+    "services",
+    {
+      ids: serviceIds,
+    },
+    { enabled: serviceIds.length > 0 },
   );
+
+  const companyById = Object.fromEntries(companies.map((c) => [c.id, c]));
+  const serviceById = Object.fromEntries(services.map((s) => [s.id, s]));
 
   const soonContracts = contracts.filter(
     (c) => c.end_date >= todayStr && c.end_date <= plus30Str,
@@ -90,7 +96,10 @@ export const MaintenanceRenewalWidget = () => {
         </span>
         <div className="flex gap-2">
           {soonContracts.length > 0 && (
-            <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
+            <Badge
+              variant="outline"
+              className="bg-orange-100 text-orange-800 border-orange-300"
+            >
               {"\u26A0"} {soonContracts.length} bient\u00f4t
             </Badge>
           )}
