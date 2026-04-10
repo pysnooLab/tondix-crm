@@ -51,9 +51,7 @@ describe("Tondix types", () => {
   });
 
   it("MaintenanceContract.status is active or expired", () => {
-    expectTypeOf<MaintenanceContract["status"]>().toEqualTypeOf<
-      "active" | "expired"
-    >();
+    expectTypeOf<MaintenanceContract["status"]>().toEqualTypeOf<"active" | "expired">();
   });
 
   it("CompanySummary extends Company", () => {
