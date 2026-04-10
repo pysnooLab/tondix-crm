@@ -32,10 +32,6 @@ export const DealInputs = () => {
 
       <DealProductLinesInput />
       <DealServiceLinesInput />
-
-      <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-700">
-        Quand ce deal passe en Gagné, un contrat sera automatiquement créé
-      </div>
     </div>
   );
 };
@@ -178,6 +174,13 @@ const DealProductLinesInput = () => {
               label="Produit"
               helperText={false}
               validate={required()}
+              onChange={(...args: unknown[]) => {
+                const value = args[0] as string;
+                const product = products?.find((p) => String(p.id) === value);
+                if (product) {
+                  setValue(`product_lines.${index}.unit_price`, product.price);
+                }
+              }}
             />
           </div>
           <div className="w-24">
@@ -266,7 +269,7 @@ const DealServiceLinesInput = () => {
   return (
     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-medium">Contrats d&apos;entretien</h3>
+        <h3 className="text-base font-medium">Entretiens</h3>
         <a
           href="/services"
           target="_blank"
@@ -286,6 +289,13 @@ const DealServiceLinesInput = () => {
               label="Service"
               helperText={false}
               validate={required()}
+              onChange={(...args: unknown[]) => {
+                const value = args[0] as string;
+                const service = services?.find((s) => String(s.id) === value);
+                if (service) {
+                  setValue(`service_lines.${index}.unit_price`, service.price);
+                }
+              }}
             />
           </div>
           <div className="w-24">
@@ -328,6 +338,10 @@ const DealServiceLinesInput = () => {
         <Plus className="h-4 w-4 mr-1" />
         Ajouter un entretien
       </Button>
+
+      <div className="mt-3 bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-700">
+        Quand ce deal passe en Gagné, un contrat sera automatiquement créé
+      </div>
     </div>
   );
 };
