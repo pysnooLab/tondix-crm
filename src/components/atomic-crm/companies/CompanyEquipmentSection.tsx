@@ -1,6 +1,8 @@
-import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
 import { useGetList, useGetMany, useShowContext } from "ra-core";
 import { Link } from "react-router";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { Company, Deal, DealProduct, Product } from "../types";
 
 export const CompanyEquipmentSection = () => {
@@ -43,6 +45,17 @@ export const CompanyEquipmentSection = () => {
           <Badge variant="secondary">0</Badge>
         </div>
         <p className="text-sm text-gray-500">Aucun équipement acheté</p>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3 cursor-pointer"
+          asChild
+        >
+          <Link to="/deals/create">
+            <Plus className="h-4 w-4 mr-1" />
+            Créer un deal
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -120,6 +133,17 @@ export const CompanyEquipmentSection = () => {
           ))}
         </tbody>
       </table>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-3 cursor-pointer"
+        asChild
+      >
+        <Link to="/deals/create">
+          <Plus className="h-4 w-4 mr-1" />
+          Créer un deal
+        </Link>
+      </Button>
     </div>
   );
 };
