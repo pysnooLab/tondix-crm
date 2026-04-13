@@ -97,7 +97,7 @@ select
     exists(
         select 1 from public.deal_products dp
         join public.deals d2 on d2.id = dp.deal_id
-        where d2.company_id = c.id
+        where d2.company_id = c.id and d2.stage = 'won'
     ) as has_equipment,
     exists(
         select 1 from public.maintenance_contracts mc
