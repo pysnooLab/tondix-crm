@@ -43,6 +43,7 @@ const AddMaintenanceContractButton = ({
   const queryClient = useQueryClient();
 
   const { data: allServices } = useGetList<Service>("services", {
+    filter: { "active@eq": true },
     pagination: { page: 1, perPage: 100 },
     sort: { field: "name", order: "ASC" },
   });
@@ -74,10 +75,11 @@ const AddMaintenanceContractButton = ({
 
   useEffect(() => {
     if (endDateManuallyEdited) return;
-    if (selectedService?.periodicity_months && startDate) {
+    // periodicity_months === 0 means no recurring period (e.g. one-off repair) — skip auto-calc
+    if (selectedService && selectedService.periodicity_months > 0 && startDate) {
       setValue("end_date", addMonths(startDate, selectedService.periodicity_months));
     }
-  }, [selectedServiceId, startDate, selectedService?.periodicity_months, endDateManuallyEdited, setValue]);
+  }, [selectedServiceId, startDate, selectedService, endDateManuallyEdited, setValue]);
 
   const onSubmit = (data: ContractFormData) => {
     create(
@@ -93,7 +95,7 @@ const AddMaintenanceContractButton = ({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ["maintenance_contracts"],
+            queryKey: ["maintenance_contracts", "getList"],
           });
           setOpen(false);
           reset();
@@ -176,7 +178,8 @@ const AddMaintenanceContractButton = ({
                   </span>
                 )}
                 {!endDateManuallyEdited &&
-                  selectedService?.periodicity_months &&
+                  selectedService &&
+                  selectedService.periodicity_months > 0 &&
                   endDate && (
                     <span className="text-xs text-muted-foreground">
                       Calculé automatiquement (
