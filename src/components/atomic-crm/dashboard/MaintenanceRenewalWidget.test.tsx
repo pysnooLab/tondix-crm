@@ -102,7 +102,7 @@ describe("MaintenanceRenewalWidget", () => {
   it("affiche le badge expire", async () => {
     const screen = await render(<Default data={dynamicData} />);
     await expect
-      .element(screen.getByText(/1 expir.+\(s\)/))
+      .element(screen.getByText(/expiré\(s\)/i))
       .toBeVisible();
   });
 
