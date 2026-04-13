@@ -42,9 +42,7 @@ test.describe("Companies filter — demo mode", () => {
     });
 
     // Verify the equipment section shows actual products (not the empty state)
-    await expect(
-      page.getByText("Aucun équipement acheté"),
-    ).not.toBeVisible();
+    await expect(page.getByText("Aucun équipement acheté")).not.toBeVisible();
   });
 
   test("Avec entretien actif filter returns only companies with active maintenance", async ({
@@ -65,9 +63,7 @@ test.describe("Companies filter — demo mode", () => {
     expect(totalCards).toBeGreaterThan(0);
 
     // Click the "Avec entretien actif" filter button
-    await page
-      .getByRole("button", { name: /Avec entretien actif/ })
-      .click();
+    await page.getByRole("button", { name: /Avec entretien actif/ }).click();
 
     // Wait for filtered results to settle
     await expect(page.locator("text=1-25 of 55")).not.toBeVisible({
