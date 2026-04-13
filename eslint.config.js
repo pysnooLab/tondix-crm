@@ -35,6 +35,14 @@ export default tseslint.config(
         },
       ],
       "no-console": ["error", { allow: ["warn", "error"] }],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXText[raw=/\\\\u[0-9a-fA-F]{4}/]",
+          message:
+            "Utiliser les caractères UTF-8 directement dans les textes JSX, pas des séquences \\uXXXX",
+        },
+      ],
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/consistent-type-imports": "warn",
     },

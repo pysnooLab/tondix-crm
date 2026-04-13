@@ -101,7 +101,7 @@ describe("MaintenanceRenewalWidget", () => {
 
   it("affiche le badge expire", async () => {
     const screen = await render(<Default data={dynamicData} />);
-    await expect.element(screen.getByText(/expiré/i)).toBeVisible();
+    await expect.element(screen.getByText(/expiré\(s\)/i)).toBeVisible();
   });
 
   it("retourne null si aucun contrat dans les fenêtres 0-30j et 0-60j", async () => {
