@@ -1,5 +1,18 @@
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCreate, useGetList, useGetMany, useShowContext } from "ra-core";
+import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useGetList, useGetMany, useShowContext } from "ra-core";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import type { Company, MaintenanceContract, Service } from "../types";
 
 const formatFrenchMonth = (dateStr: string) =>
@@ -7,6 +20,182 @@ const formatFrenchMonth = (dateStr: string) =>
     year: "numeric",
     month: "long",
   }).format(new Date(dateStr));
+
+type ContractFormData = {
+  service_id: string;
+  start_date: string;
+  end_date: string;
+};
+
+const addMonths = (dateStr: string, months: number): string => {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().split("T")[0];
+};
+
+const AddMaintenanceContractButton = ({
+  companyId,
+}: {
+  companyId: Company["id"];
+}) => {
+  const [open, setOpen] = useState(false);
+  const [create, { isPending }] = useCreate();
+  const queryClient = useQueryClient();
+
+  const { data: allServices } = useGetList<Service>("services", {
+    pagination: { page: 1, perPage: 100 },
+    sort: { field: "name", order: "ASC" },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<ContractFormData>({
+    defaultValues: {
+      service_id: "",
+      start_date: new Date().toISOString().split("T")[0],
+      end_date: "",
+    },
+  });
+
+  const selectedServiceId = watch("service_id");
+  const startDate = watch("start_date");
+  const endDate = watch("end_date");
+  const [endDateManuallyEdited, setEndDateManuallyEdited] = useState(false);
+
+  // Auto-calculate end_date when service or start_date changes
+  const selectedService = allServices?.find(
+    (s) => String(s.id) === selectedServiceId,
+  );
+
+  useEffect(() => {
+    if (endDateManuallyEdited) return;
+    if (selectedService?.periodicity_months && startDate) {
+      setValue("end_date", addMonths(startDate, selectedService.periodicity_months));
+    }
+  }, [selectedServiceId, startDate, selectedService?.periodicity_months, endDateManuallyEdited, setValue]);
+
+  const onSubmit = (data: ContractFormData) => {
+    create(
+      "maintenance_contracts",
+      {
+        data: {
+          company_id: companyId,
+          service_id: data.service_id,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["maintenance_contracts"],
+          });
+          setOpen(false);
+          reset();
+          setEndDateManuallyEdited(false);
+        },
+      },
+    );
+  };
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-3 cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        <Plus className="h-4 w-4 mr-1" />
+        Ajouter un contrat
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <DialogHeader>
+              <DialogTitle>Nouveau contrat d&apos;entretien</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 py-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="service_id">Service</Label>
+                <select
+                  id="service_id"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  {...register("service_id", { required: true })}
+                >
+                  <option value="">Choisir un service...</option>
+                  {(allServices ?? []).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.service_id && (
+                  <span className="text-xs text-red-500">
+                    Le service est requis
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="start_date">Date de début</Label>
+                <input
+                  id="start_date"
+                  type="date"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  {...register("start_date", { required: true })}
+                />
+                {errors.start_date && (
+                  <span className="text-xs text-red-500">
+                    La date de début est requise
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="end_date">Date de fin</Label>
+                <input
+                  id="end_date"
+                  type="date"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  {...register("end_date", { required: true })}
+                  onChange={(e) => {
+                    setEndDateManuallyEdited(true);
+                    setValue("end_date", e.target.value);
+                  }}
+                />
+                {errors.end_date && (
+                  <span className="text-xs text-red-500">
+                    La date de fin est requise
+                  </span>
+                )}
+                {!endDateManuallyEdited &&
+                  selectedService?.periodicity_months &&
+                  endDate && (
+                    <span className="text-xs text-muted-foreground">
+                      Calculé automatiquement (
+                      {selectedService.periodicity_months} mois)
+                    </span>
+                  )}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isPending} className="cursor-pointer">
+                {isPending ? "Création..." : "Créer le contrat"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 export const CompanyMaintenanceSection = () => {
   const { record } = useShowContext<Company>();
@@ -42,6 +231,7 @@ export const CompanyMaintenanceSection = () => {
           <Badge variant="secondary">0 actif(s)</Badge>
         </div>
         <p className="text-sm text-gray-500">Aucun contrat</p>
+        <AddMaintenanceContractButton companyId={record.id} />
       </div>
     );
   }
@@ -92,6 +282,7 @@ export const CompanyMaintenanceSection = () => {
           })}
         </tbody>
       </table>
+      <AddMaintenanceContractButton companyId={record.id} />
     </div>
   );
 };
