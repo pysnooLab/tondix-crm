@@ -92,7 +92,7 @@ export const MaintenanceRenewalWidget = () => {
     <div className="rounded-xl border overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-green-600 to-yellow-600">
         <span className="text-white font-semibold">
-          🔧 Entretiens à relancer
+          {"\uD83D\uDD27"} Entretiens \u00e0 relancer
         </span>
         <div className="flex gap-2">
           {soonContracts.length > 0 && (
