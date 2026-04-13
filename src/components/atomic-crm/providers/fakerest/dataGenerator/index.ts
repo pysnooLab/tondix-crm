@@ -2,9 +2,14 @@ import { generateCompanies } from "./companies";
 import { generateContactNotes } from "./contactNotes";
 import { generateContacts } from "./contacts";
 import { generateDealNotes } from "./dealNotes";
+import { generateDealProducts } from "./dealProducts";
+import { generateDealServices } from "./dealServices";
 import { generateDeals } from "./deals";
 import { finalize } from "./finalize";
+import { generateMaintenanceContracts } from "./maintenanceContracts";
+import { generateProducts } from "./products";
 import { generateSales } from "./sales";
+import { generateServices } from "./services";
 import { generateTags } from "./tags";
 import { generateTasks } from "./tasks";
 import type { Db } from "./types";
@@ -16,9 +21,14 @@ export default (): Db => {
   db.companies = generateCompanies(db);
   db.contacts = generateContacts(db);
   db.contact_notes = generateContactNotes(db);
+  db.products = generateProducts();
+  db.services = generateServices();
   db.deals = generateDeals(db);
   db.deal_notes = generateDealNotes(db);
   db.tasks = generateTasks(db);
+  db.deal_products = generateDealProducts(db);
+  db.deal_services = generateDealServices(db);
+  db.maintenance_contracts = generateMaintenanceContracts(db);
   db.configuration = [
     {
       id: 1,

@@ -9,9 +9,16 @@ import {
 } from "faker/locale/en_US";
 
 import { randomDate } from "./utils";
-import { defaultCompanySectors } from "../../../root/defaultConfiguration";
 import type { Company, RAFile } from "../../../types";
 import type { Db } from "./types";
+
+const tondixSectors = [
+  { value: "paysagiste", label: "Paysagiste" },
+  { value: "golf", label: "Golf / Terrain de sport" },
+  { value: "collectivite", label: "Collectivité" },
+  { value: "agriculture", label: "Agriculture" },
+  { value: "autre", label: "Autre" },
+];
 
 const sizes = [1, 10, 50, 250, 500];
 
@@ -27,7 +34,7 @@ export const generateCompanies = (db: Db, size = 55): Required<Company>[] => {
         title: lorem.text(1),
         src: `https://marmelab.com/react-admin-crm/logos/${id}.png`,
       } as RAFile,
-      sector: random.arrayElement(defaultCompanySectors).value,
+      sector: random.arrayElement(tondixSectors).value,
       size: random.arrayElement(sizes) as 1 | 10 | 50 | 250 | 500,
       linkedin_url: `https://www.linkedin.com/company/${name
         .toLowerCase()
@@ -48,8 +55,8 @@ export const generateCompanies = (db: Db, size = 55): Required<Company>[] => {
       tax_identifier: random.alphaNumeric(10),
       country: random.arrayElement(["USA", "France", "UK"]),
       context_links: [],
-      has_equipment: datatype.boolean(),
-      has_maintenance: datatype.boolean(),
+      has_equipment: false,
+      has_maintenance: false,
     };
   });
 };
