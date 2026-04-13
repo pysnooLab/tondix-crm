@@ -91,7 +91,8 @@ export const generateMaintenanceContracts = (db: Db): MaintenanceContract[] => {
 
   // If we didn't have enough entries, generate synthetic ones to meet minimums
   const urgentCount = result.filter(
-    (c) => c.status === "active" && dateDiffDays(today, new Date(c.end_date)) <= 29,
+    (c) =>
+      c.status === "active" && dateDiffDays(today, new Date(c.end_date)) <= 29,
   ).length;
   const expiredCount = result.filter((c) => c.status === "expired").length;
 

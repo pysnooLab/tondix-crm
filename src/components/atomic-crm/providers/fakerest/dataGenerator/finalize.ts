@@ -11,16 +11,13 @@ export const finalize = (db: Db) => {
   // Patch has_equipment and has_maintenance based on actual data
   const now = new Date();
   db.companies.forEach((company) => {
-    const companyDeals = db.deals.filter(
-      (d) => d.company_id === company.id,
-    );
+    const companyDeals = db.deals.filter((d) => d.company_id === company.id);
     const dealIds = new Set(companyDeals.map((d) => d.id));
     (company as any).has_equipment = db.deal_products.some((dp) =>
       dealIds.has(dp.deal_id as number),
     );
     (company as any).has_maintenance = db.maintenance_contracts.some(
-      (mc) =>
-        mc.company_id === company.id && new Date(mc.end_date) > now,
+      (mc) => mc.company_id === company.id && new Date(mc.end_date) > now,
     );
   });
 };
