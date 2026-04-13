@@ -76,10 +76,23 @@ const AddMaintenanceContractButton = ({
   useEffect(() => {
     if (endDateManuallyEdited) return;
     // periodicity_months === 0 means no recurring period (e.g. one-off repair) — skip auto-calc
-    if (selectedService && selectedService.periodicity_months > 0 && startDate) {
-      setValue("end_date", addMonths(startDate, selectedService.periodicity_months));
+    if (
+      selectedService &&
+      selectedService.periodicity_months > 0 &&
+      startDate
+    ) {
+      setValue(
+        "end_date",
+        addMonths(startDate, selectedService.periodicity_months),
+      );
     }
-  }, [selectedServiceId, startDate, selectedService, endDateManuallyEdited, setValue]);
+  }, [
+    selectedServiceId,
+    startDate,
+    selectedService,
+    endDateManuallyEdited,
+    setValue,
+  ]);
 
   const onSubmit = (data: ContractFormData) => {
     create(
@@ -189,7 +202,11 @@ const AddMaintenanceContractButton = ({
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isPending} className="cursor-pointer">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="cursor-pointer"
+              >
                 {isPending ? "Création..." : "Créer le contrat"}
               </Button>
             </DialogFooter>
