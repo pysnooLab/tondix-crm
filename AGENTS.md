@@ -233,7 +233,7 @@ make clean TASK=XXX NAME=yyy
 | JIBE     | claude-sonnet-4-6          | Review code + conformité spec                  |
 | FRANCIS  | claude-sonnet-4-6          | Review sécurité                                |
 | GUILLAUME| claude-haiku-4-5-20251001  | Validation tests                               |
-| ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX                               |
+| ALEXANDRA| claude-haiku-4-5-20251001  | Validation UI/UX — test visuel en mode démo (Playwright headless screenshots), pas uniquement review de code |
 | BENOIT   | claude-sonnet-4-6          | Arbitrage PM (uniquement si conflit)           |
 | JULIEN   | claude-haiku-4-5-20251001  | make merge + gh pr merge --auto (GitHub attend la CI) |
 
@@ -279,3 +279,6 @@ Les agents envoient leurs résultats via `SendMessage` au team-lead (toi). Tu es
 - **REFLECTION.md :** écrite après les reviews (pas avant merge) pour capitaliser sur tous les retours
 - **CI obligatoire :** JULIEN active `--auto` comme filet, puis surveille activement avec `gh pr checks <N> --watch`. Si exit 1 : rapport détaillé au team-lead immédiatement, JEROME corrige, JULIEN re-surveille. La branch protection bloque côté serveur (double verrou). Haiku suffit ici — l'exit code est binaire, pas d'interprétation complexe.
 - **Titre de PR :** JULIEN passe toujours `TITLE="feat/fix: <description de la tâche>"` à `make merge` — jamais le message du dernier commit. La description vient du sujet de la tâche (TaskGet si besoin).
+- **Tests e2e obligatoires :** toute tâche touchant à l'UI, aux filtres, aux formulaires ou aux interactions utilisateur doit inclure un test e2e nouveau ou compléter un test existant dans `e2e/`. Si la tâche est vraiment non testable par e2e (ex: CSS pur sans interaction, migration DB uniquement), le ticket doit le noter explicitement dans ses `acceptance_criteria`. JEROME ajoute le test e2e dans son implémentation, GUILLAUME vérifie qu'il existe et passe.
+- **ALEXANDRA — validation démo visuelle :** ALEXANDRA ne se limite pas à la review de code. Elle doit démarrer le démo avec un port non-conflictuel, naviguer dans l'UI via Playwright en mode **headless obligatoire**, prendre des screenshots, et vérifier que le rendu correspond aux mockups de `docs/superpowers/specs/2026-04-09-tondix-crm-design.md`. Tout écart visuel est signalé même si le code est correct.
+- **Mode silencieux obligatoire :** aucun agent ne doit ouvrir de fenêtre navigateur. Règles strictes : (1) Playwright toujours `--headless` ; (2) Vite jamais avec `--open` ; (3) Vitest sans `browser.ui: true`. Toute commande qui ouvre une fenêtre est un bug de prompt.
