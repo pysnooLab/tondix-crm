@@ -92,7 +92,7 @@ export const MaintenanceRenewalWidget = () => {
     <div className="rounded-xl border overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-green-600 to-yellow-600">
         <span className="text-white font-semibold">
-          {"\uD83D\uDD27"} Entretiens \u00e0 relancer
+          {"\uD83D\uDD27"} Entretiens à relancer
         </span>
         <div className="flex gap-2">
           {soonContracts.length > 0 && (
@@ -100,12 +100,12 @@ export const MaintenanceRenewalWidget = () => {
               variant="outline"
               className="bg-orange-100 text-orange-800 border-orange-300"
             >
-              {"\u26A0"} {soonContracts.length} bient\u00f4t
+              {"\u26A0"} {soonContracts.length} bientôt
             </Badge>
           )}
           {expiredContracts.length > 0 && (
             <Badge variant="destructive">
-              {"\u2715"} {expiredContracts.length} expir\u00e9(s)
+              {"\u2715"} {expiredContracts.length} expiré(s)
             </Badge>
           )}
         </div>
@@ -113,7 +113,7 @@ export const MaintenanceRenewalWidget = () => {
       {soonContracts.length > 0 && (
         <div>
           <div className="px-4 py-2 bg-orange-50 text-orange-700 text-sm font-medium">
-            Expire bient\u00f4t
+            Expire bientôt
           </div>
           {soonContracts.map(renderRow)}
         </div>
@@ -121,7 +121,7 @@ export const MaintenanceRenewalWidget = () => {
       {expiredContracts.length > 0 && (
         <div>
           <div className="px-4 py-2 bg-red-50 text-red-700 text-sm font-medium">
-            Expir\u00e9s r\u00e9cemment
+            Expirés récemment
           </div>
           {expiredContracts.map(renderRow)}
         </div>
